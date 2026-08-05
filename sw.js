@@ -1,13 +1,20 @@
-self.addEventListener("install", (event) => {
+self.addEventListener("install", function (event) {
   event.waitUntil(self.skipWaiting());
 });
 
-self.addEventListener("activate", (event) => {
+self.addEventListener("activate", function (event) {
   event.waitUntil(
-    (async () => {
-      const cacheNames = await caches.keys();
-      await Promise.all(cacheNames.map((name) => caches.delete(name)));
-      await self.registration.unregister();
-    })(),
+    caches
+      .keys()
+      .then(function (cacheNames) {
+        return Promise.all(
+          cacheNames.map(function (name) {
+            return caches.delete(name);
+          }),
+        );
+      })
+      .then(function () {
+        return self.registration.unregister();
+      }),
   );
 });

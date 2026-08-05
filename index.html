@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light" />
     <meta name="theme-color" content="#d73435" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -14,8 +15,76 @@
     <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="/icon-180.png" sizes="180x180" />
     <title>لالة — طلبات الخضار والفواكه</title>
-    <script type="module" crossorigin src="/assets/spa-index-DSkdQidP.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/styles-BttdxJ6F.css">
+    <style>
+      html,
+      body {
+        min-height: 100%;
+        color-scheme: light;
+        background: #f8fafc !important;
+      }
+
+      #startup-status {
+        position: fixed;
+        inset: 0;
+        z-index: 2147483647;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        padding: 24px;
+        background: #f8fafc;
+        color: #1f2937;
+        text-align: center;
+      }
+
+      #startup-status[hidden] {
+        display: none;
+      }
+
+      #startup-card {
+        width: 100%;
+        max-width: 420px;
+        padding: 28px 20px;
+        border: 1px solid #e5e7eb;
+        border-radius: 24px;
+        background: #ffffff;
+        box-shadow: 0 12px 36px rgba(31, 41, 55, 0.08);
+      }
+
+      #startup-mark {
+        display: flex;
+        width: 48px;
+        height: 48px;
+        margin: 0 auto 14px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 16px;
+        background: #d73435;
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 900;
+      }
+
+      #startup-message {
+        margin: 8px 0 0;
+        color: #6b7280;
+        font-size: 14px;
+        line-height: 1.8;
+      }
+
+      #startup-action {
+        display: none;
+        margin-top: 18px;
+        padding: 12px 18px;
+        border-radius: 12px;
+        background: #d73435;
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: 700;
+      }
+    </style>
+    <script type="module" crossorigin src="/assets/spa-index-CcbNjpto.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/styles-Cek4dVF5.css">
   </head>
   <body
     style="
@@ -26,24 +95,84 @@
     "
   >
     <script>
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker
-          .getRegistrations()
-          .then((registrations) =>
-            Promise.all(registrations.map((registration) => registration.unregister())),
-          )
-          .catch(() => undefined);
-      }
+      window.addEventListener("load", function () {
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker.getRegistrations().then(
+            function (registrations) {
+              registrations.forEach(function (registration) {
+                registration.unregister();
+              });
+            },
+            function () {},
+          );
+        }
 
-      if ("caches" in window) {
-        caches
-          .keys()
-          .then((names) => Promise.all(names.map((name) => caches.delete(name))))
-          .catch(() => undefined);
-      }
+        if ("caches" in window) {
+          caches.keys().then(
+            function (names) {
+              names.forEach(function (name) {
+                caches.delete(name);
+              });
+            },
+            function () {},
+          );
+        }
+      });
     </script>
-    <div id="root">
-      <p style="padding: 24px; text-align: center">جاري تحميل لالة…</p>
+    <div id="startup-status" role="status" aria-live="polite">
+      <div id="startup-card">
+        <div id="startup-mark" aria-hidden="true">ل</div>
+        <strong>جاري تحميل لالة…</strong>
+        <p id="startup-message">يرجى الانتظار لحظات.</p>
+        <a id="startup-action" href="/">إعادة فتح الموقع</a>
+        <noscript>
+          <p style="margin-top: 12px; color: #b42318">
+            JavaScript متوقف في المتصفح. يجب تفعيله لتسجيل الدخول.
+          </p>
+        </noscript>
+      </div>
     </div>
+    <div id="root"></div>
+    <script>
+      (function () {
+        var root = document.getElementById("root");
+        var status = document.getElementById("startup-status");
+        var message = document.getElementById("startup-message");
+        var action = document.getElementById("startup-action");
+        var booted = false;
+        var observer;
+
+        function markBooted() {
+          if (!root || !status || !root.firstElementChild) return;
+          booted = true;
+          status.hidden = true;
+          if (observer) observer.disconnect();
+        }
+
+        function showStartupError(code) {
+          if (booted || !status || !message || !action) return;
+          status.hidden = false;
+          message.textContent =
+            "تعذر تشغيل الموقع على هذا الجهاز. افتح الموقع مجدداً. رمز الفحص: " + code;
+          action.style.display = "inline-block";
+        }
+
+        if (root && "MutationObserver" in window) {
+          observer = new MutationObserver(markBooted);
+          observer.observe(root, { childList: true });
+        }
+
+        window.addEventListener("error", function () {
+          showStartupError("LALA-JS");
+        });
+        window.addEventListener("unhandledrejection", function () {
+          showStartupError("LALA-PROMISE");
+        });
+        window.setTimeout(function () {
+          markBooted();
+          if (!booted) showStartupError("LALA-START");
+        }, 10000);
+      })();
+    </script>
   </body>
 </html>
