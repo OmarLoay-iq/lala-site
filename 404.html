@@ -8,10 +8,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="لالة" />
-    <meta
-      name="description"
-      content="منصة لالة لطلب الخضار والفواكه ومنتجات السوق بسهولة."
-    />
+    <meta name="description" content="منصة لالة لطلب الخضار والفواكه ومنتجات السوق بسهولة." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -23,10 +20,36 @@
     <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="/icon-180.png" sizes="180x180" />
     <title>لالة — طلبات الخضار والفواكه</title>
-    <script type="module" crossorigin src="/assets/index-Ca9M4uVv.js"></script>
+    <script type="module" crossorigin src="/assets/index-wpgpcKBw.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/styles-BttdxJ6F.css">
   </head>
-  <body style="font-family: 'Cairo', system-ui, sans-serif">
-    <div id="root"></div>
+  <body
+    style="
+      margin: 0;
+      background: #f8fafc;
+      color: #1f2937;
+      font-family: &quot;Cairo&quot;, system-ui, sans-serif;
+    "
+  >
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+          .getRegistrations()
+          .then((registrations) =>
+            Promise.all(registrations.map((registration) => registration.unregister())),
+          )
+          .catch(() => undefined);
+      }
+
+      if ("caches" in window) {
+        caches
+          .keys()
+          .then((names) => Promise.all(names.map((name) => caches.delete(name))))
+          .catch(() => undefined);
+      }
+    </script>
+    <div id="root">
+      <p style="padding: 24px; text-align: center">جاري تحميل لالة…</p>
+    </div>
   </body>
 </html>
